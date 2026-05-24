@@ -29,6 +29,7 @@
       backface-visibility: hidden;
       perspective: 1000px;
       transform-style: preserve-3d;
+      position: relative;
     }
     .swiper-slide img {
       width: 100%;
@@ -40,8 +41,24 @@
       touch-action: none;
       backface-visibility: hidden;
       transform-origin: center center;
-      transition: transform 0.15s ease-out;
+      transition: transform 0.15s ease-out, opacity 0.35s ease;
+      opacity: 0;
     }
+    .swiper-slide img.loaded { opacity: 1; }
+    .swiper-lazy-preloader {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: rgba(255,255,255,0.9);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      animation: spin 0.9s linear infinite;
+      z-index: 5;
+    }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
     .swiper-button-next,
     .swiper-button-prev {
       color: #fff;
@@ -71,12 +88,17 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Create 31 slides -----
+    // ----- Create 31 slides (use Swiper lazy loading) -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" loading="lazy" />`;
+      slide.innerHTML = `
+        <img class="swiper-lazy" data-src="menu/page${i}.jpg" alt="Page ${i}" decoding="async" />
+        <div class="swiper-lazy-preloader"></div>
+      `;
+      // attach load handler to fade-in when actual src is assigned
+      slide.querySelector('img').addEventListener('load', (ev) => ev.target.classList.add('loaded'));
       wrapper.appendChild(slide);
     }
 
@@ -88,7 +110,11 @@
     extraFiles.forEach((path, idx) => {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" loading="lazy" />`;
+      slide.innerHTML = `
+        <img class="swiper-lazy" data-src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" decoding="async" />
+        <div class="swiper-lazy-preloader"></div>
+      `;
+      slide.querySelector('img').addEventListener('load', (ev) => ev.target.classList.add('loaded'));
       wrapper.appendChild(slide);
     });
 
@@ -98,7 +124,8 @@
       grabCursor: true,
       speed: 650,
       loop: false,
-      preloadImages: true,
+      preloadImages: false, // let Swiper lazy-load images
+      lazy: { loadPrevNext: true, loadPrevNextAmount: 2 },
       flipEffect: { slideShadows: true, limitRotation: true },
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
