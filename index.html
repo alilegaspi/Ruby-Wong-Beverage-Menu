@@ -98,6 +98,7 @@
       let lastX = 0, lastY = 0;
       let startX = 0, startY = 0;
       let startDist = 0;
+      let startScale = 1;
       let doubleTap = 0;
 
       const updateTransform = () => {
@@ -108,8 +109,12 @@
       // Compute transform origin from touch point
       const setOrigin = (touch) => {
         const rect = img.getBoundingClientRect();
-        originX = touch.clientX - rect.left;
-        originY = touch.clientY - rect.top;
+        originX = Math.max(0, Math.min(rect.width, touch.clientX - rect.left));
+        originY = Math.max(0, Math.min(rect.height, touch.clientY - rect.top));
+      };
+
+      const setSwiperLock = () => {
+        if (typeof swiper !== 'undefined') swiper.allowTouchMove = !isZoomed;
       };
 
       // Double tap zoom to point
@@ -119,7 +124,8 @@
           setOrigin(e.changedTouches[0]);
           isZoomed = !isZoomed;
           scale = isZoomed ? 2.5 : 1;
-          moveX = moveY = 0;
+          moveX = moveY = lastX = lastY = 0;
+          setSwiperLock();
           updateTransform();
         }
         doubleTap = now;
@@ -134,9 +140,12 @@
           const dx = e.touches[1].pageX - e.touches[0].pageX;
           const dy = e.touches[1].pageY - e.touches[0].pageY;
           startDist = Math.hypot(dx, dy);
+          startScale = scale;
           const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
           const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
           setOrigin({ clientX: midX, clientY: midY });
+          isZoomed = true;
+          setSwiperLock();
         }
       });
 
@@ -154,15 +163,25 @@
           const dy = e.touches[1].pageY - e.touches[0].pageY;
           const dist = Math.hypot(dx, dy);
           if (!startDist) startDist = dist;
-          const zoom = Math.min(Math.max(scale * (dist / startDist), 1), 4);
+          const zoom = Math.min(Math.max(startScale * (dist / startDist), 1), 4);
           scale = zoom;
           isZoomed = scale > 1.05;
+          setSwiperLock();
         }
         requestAnimationFrame(updateTransform);
-      });
+      }, { passive: false });
 
-      img.addEventListener("touchend", () => {
+      img.addEventListener("touchend", (e) => {
         startDist = 0;
+        startScale = scale;
+        if (scale <= 1.01) {
+          scale = 1;
+          isZoomed = false;
+          moveX = moveY = lastX = lastY = 0;
+          img.style.transformOrigin = "center center";
+          setSwiperLock();
+          updateTransform();
+        }
       });
 
       // Reset zoom between pages
@@ -171,6 +190,7 @@
         moveX = moveY = lastX = lastY = 0;
         isZoomed = false;
         img.style.transformOrigin = "center center";
+        setSwiperLock();
         updateTransform();
       });
     });
