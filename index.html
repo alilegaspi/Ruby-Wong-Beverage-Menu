@@ -78,6 +78,18 @@
       wrapper.appendChild(slide);
     }
 
+    // Append two extra pages (attached images) as the last pages
+    const extraFiles = [
+      "menu/Noodle alley menu 2026_page-0001.jpg",
+      "menu/Noodle alley menu 2026_page-0002.jpg",
+    ];
+    extraFiles.forEach((path, idx) => {
+      const slide = document.createElement("div");
+      slide.className = "swiper-slide";
+      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" loading="lazy" />`;
+      wrapper.appendChild(slide);
+    });
+
     // ----- Swiper setup -----
     const swiper = new Swiper(".swiper", {
       effect: "cube",
