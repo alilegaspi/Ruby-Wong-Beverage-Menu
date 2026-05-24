@@ -98,6 +98,7 @@
       let lastX = 0, lastY = 0;
       let startX = 0, startY = 0;
       let startDist = 0;
+      let lastTouchCount = 0;
       let startScale = 1;
       let doubleTap = 0;
 
@@ -120,7 +121,8 @@
       // Double tap zoom to point
       img.addEventListener("touchend", (e) => {
         const now = Date.now();
-        if (now - doubleTap < 300 && e.changedTouches.length === 1) {
+        // Only treat as double-tap when the interaction was single-touch
+        if (lastTouchCount === 1 && now - doubleTap < 300 && e.changedTouches.length === 1) {
           setOrigin(e.changedTouches[0]);
           isZoomed = !isZoomed;
           scale = isZoomed ? 2.5 : 1;
@@ -133,6 +135,7 @@
 
       // Touch start
       img.addEventListener("touchstart", (e) => {
+        lastTouchCount = e.touches.length;
         if (e.touches.length === 1 && isZoomed) {
           startX = e.touches[0].clientX - lastX;
           startY = e.touches[0].clientY - lastY;
