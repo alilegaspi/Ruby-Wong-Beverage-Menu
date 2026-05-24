@@ -19,6 +19,7 @@
       width: 100vw;
       height: 100vh;
       background: #000;
+      perspective: 2200px;
     }
     .swiper-slide {
       display: flex;
@@ -27,6 +28,7 @@
       background: #000;
       backface-visibility: hidden;
       perspective: 1000px;
+      transform-style: preserve-3d;
     }
     .swiper-slide img {
       width: 100%;
@@ -90,14 +92,14 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Swiper setup -----
+    // ----- Swiper setup (book-style page flip) -----
     const swiper = new Swiper(".swiper", {
-      effect: "cube",
-      cubeEffect: { shadow: false, slideShadows: false },
+      effect: "flip",
       grabCursor: true,
       speed: 650,
       loop: false,
       preloadImages: true,
+      flipEffect: { slideShadows: true, limitRotation: true },
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
     });
