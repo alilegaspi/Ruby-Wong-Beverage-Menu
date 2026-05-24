@@ -93,14 +93,14 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Swiper setup (book-style page flip) -----
+    // ----- Swiper setup (restore cube-style page turn) -----
     const swiper = new Swiper(".swiper", {
-      effect: "flip",
+      effect: "cube",
+      cubeEffect: { shadow: false, slideShadows: false },
       grabCursor: true,
       speed: 650,
       loop: false,
       preloadImages: true,
-      flipEffect: { slideShadows: true, limitRotation: true },
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
     });
