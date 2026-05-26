@@ -65,9 +65,11 @@
       height: calc(100vh - 50px);
       margin-top: 50px;
       background: #000;
-      /* Forces mobile browser to keep rendering engine active */
-      -webkit-transform: translate3d(0,0,0);
-      transform: translate3d(0,0,0);
+      /* Configures depth perception for the 3D book rotation */
+      perspective: 1500px;
+    }
+    .swiper-wrapper {
+      transform-style: preserve-3d;
     }
     .swiper-slide {
       display: flex;
@@ -75,6 +77,10 @@
       align-items: center;
       background: #000;
       position: relative;
+      /* Pins the rotation point to the left side to act as a real book spine */
+      transform-origin: left center !important;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .swiper-slide img {
       width: 100%;
@@ -96,6 +102,7 @@
       opacity: 0.6;
       transition: opacity 0.3s;
       top: calc(50% + 25px);
+      z-index: 100;
     }
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
@@ -177,7 +184,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Render standard paths instantly without relying on lazy setups -----
+    // ----- Render standard paths instantly to prevent blank mobile screens -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
@@ -197,42 +204,34 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Responsive Configuration Strategy -----
-    // Detect viewport size dynamically
-    const isDesktop = window.innerWidth >= 1025;
-
-    const swiperOptions = {
+    // ----- Customized 3D Spine Page Flip Configuration -----
+    const swiper = new Swiper(".swiper", {
+      effect: "creative",
       grabCursor: true,
       simulateTouch: true,
       loop: false,
-      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-      pagination: { el: ".swiper-pagination", clickable: true }
-    };
-
-    if (isDesktop) {
-      // Premium book slide effect exclusively for PC monitors
-      swiperOptions.effect = "creative";
-      swiperOptions.speed = 450;
-      swiperOptions.creativeEffect = {
-        limitProgress: 2,
+      speed: 550, // Perfectly balanced speed for a natural page swing
+      watchSlidesProgress: true,
+      creativeEffect: {
+        limitProgress: 3,
         prev: {
+          // As you turn a page forward, the old page arches back on its Y axis and fades slightly
           shadow: true,
-          translate: ["-20%", 0, 0],
-          opacity: 0.6
+          translate: ["-10%", 0, -200],
+          rotate: [0, -45, 0],
+          opacity: 0.3,
         },
         next: {
+          // The incoming page peels over from the right side naturally flat onto the book stack
           shadow: false,
           translate: ["100%", 0, 0],
-          opacity: 1
-        }
-      };
-    } else {
-      // Hyper-optimized, zero-crash default hardware translation for phones
-      swiperOptions.effect = "slide";
-      swiperOptions.speed = 350; // Snappy touch response
-    }
-
-    const swiper = new Swiper(".swiper", swiperOptions);
+          rotate: [0, 0, 0],
+          opacity: 1,
+        },
+      },
+      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+      pagination: { el: ".swiper-pagination", clickable: true }
+    });
 
     // ----- Category Targets Mapping Config -----
     const categoryTargets = {
