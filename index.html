@@ -76,6 +76,8 @@
       perspective: 1000px;
       transform-style: preserve-3d;
       position: relative;
+      /* Anchors the page flip transition to simulate a book spine on the left */
+      transform-origin: 0% center !important;
     }
     .swiper-slide img {
       width: 100%;
@@ -109,13 +111,6 @@
     }
     .swiper-pagination-bullet-active {
       opacity: 1;
-    }
-
-    /* Adds realistic dark gradients to the 3D page fold during the flip */
-    .swiper-slide-shadow-left,
-    .swiper-slide-shadow-right {
-      border-radius: 12px;
-      background-image: linear-gradient(to right, rgba(0,0,0,0.5), rgba(0,0,0,0)) !important;
     }
 
     /* =========================================================================
@@ -206,17 +201,29 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Updated Swiper Instantiation with Book Flip Transition -----
+    // ----- Customized Book-Spine Creative Page Turn Configuration -----
     const swiper = new Swiper(".swiper", {
-      effect: "flip", // Revised animation to realistic 3D book-style flip
-      flipEffect: { 
-        shadow: true, 
-        slideShadows: true, 
-        limitRotation: true 
+      effect: "creative",
+      creativeEffect: {
+        shadowPerProgress: true,
+        prev: {
+          // Current page shifts slightly back and darkens like a turning sheet
+          shadow: true,
+          translate: ["-15%", 0, -200],
+          rotate: [0, 0, 0],
+          opacity: 0.8
+        },
+        next: {
+          // Next page smoothly slides fully over the top from the right side
+          shadow: false,
+          translate: ["100%", 0, 0],
+          rotate: [0, 0, 0],
+          opacity: 1
+        },
       },
       grabCursor: true,
       simulateTouch: true, 
-      speed: 700, // Smooth turn velocity
+      speed: 550, // Polished pacing: snappy, smooth, and natural
       loop: false,
       preloadImages: true,
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
@@ -227,8 +234,8 @@
     const categoryTargets = {
       all: 0,
       cocktails: 0,
-      spirits: 17, // Page 18
-      food: 31     // Page 32
+      spirits: 17, 
+      food: 31     
     };
 
     window.jumpToCategory = (category) => {
