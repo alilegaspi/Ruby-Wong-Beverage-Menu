@@ -21,7 +21,7 @@
     
     /* ----- Quick Access Navigation Tabs ----- */
     .menu-tabs {
-      flex: 0 0 50px;
+      flex: 0 0 25px; /* Height reduced by half from 50px */
       width: 100%;
       display: flex;
       justify-content: space-around;
@@ -39,7 +39,7 @@
       color: #ffffff;
       font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 11px; /* Scaled down slightly to fit the shorter bar snugly */
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: background 0.2s, box-shadow 0.2s;
@@ -106,7 +106,7 @@
     .swiper-slide {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* Aligns menu image boundaries to the top of the container */
+      align-items: flex-start; 
       background: #000;
       position: relative;
       height: 100%;
@@ -178,7 +178,7 @@
       .menu-tabs {
         border-radius: 12px 12px 0 0;
         margin-top: 20px;
-        height: 50px;
+        height: 25px; /* Matches mobile reduction */
       }
       
       .promo-banner {
@@ -186,7 +186,7 @@
       }
 
       .swiper {
-        height: calc(100vh - 145px);
+        height: calc(100vh - 120px); /* Recalculated dynamic footprint drop to match shorter tabs */
         margin-top: 0px;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
