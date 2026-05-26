@@ -35,7 +35,7 @@
       height: 100%;
       border: none;
       outline: none;
-      background: #ff4d4d; /* Light Red Fill */
+      background: #ff4d4d;
       color: #ffffff;
       font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
       font-weight: bold;
@@ -65,19 +65,13 @@
       height: calc(100vh - 50px);
       margin-top: 50px;
       background: #000;
-      perspective: 2200px;
     }
     .swiper-slide {
       display: flex;
       justify-content: center;
       align-items: center;
       background: #000;
-      backface-visibility: hidden;
-      perspective: 1000px;
-      transform-style: preserve-3d;
       position: relative;
-      /* Anchors the page flip transition to simulate a book spine on the left */
-      transform-origin: 0% center !important;
     }
     .swiper-slide img {
       width: 100%;
@@ -87,7 +81,6 @@
       will-change: transform;
       user-select: none;
       touch-action: none;
-      backface-visibility: hidden;
       transform-origin: center center;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
@@ -181,12 +174,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Restored: Simple, Static DOM Generation Loop -----
+    // ----- Fixed: Changed to Swiper's internal Lazy Engine classes to prevent blank mobile pages -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" loading="lazy" />`;
+      slide.innerHTML = `<img data-src="menu/page${i}.jpg" alt="Page ${i}" class="swiper-lazy" />`;
       wrapper.appendChild(slide);
     }
 
@@ -197,35 +190,36 @@
     extraFiles.forEach((path, idx) => {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" loading="lazy" />`;
+      slide.innerHTML = `<img data-src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" class="swiper-lazy" />`;
       wrapper.appendChild(slide);
     });
 
-    // ----- Customized Book-Spine Creative Page Turn Configuration -----
+    // ----- Optimized Page Sliding Configuration -----
     const swiper = new Swiper(".swiper", {
       effect: "creative",
+      watchSlidesProgress: true, // Crucial: forces swiper to monitor visibility state of all mobile layers
       creativeEffect: {
-        shadowPerProgress: true,
+        limitProgress: 2, // Memory safe feature: stops tracking deep invisible hidden slides
         prev: {
-          // Current page shifts slightly back and darkens like a turning sheet
           shadow: true,
-          translate: ["-15%", 0, -200],
-          rotate: [0, 0, 0],
-          opacity: 0.8
+          translate: ["-20%", 0, 0], // Keeps layout strictly 2D flat on mobile for performance safety
+          opacity: 0.5
         },
         next: {
-          // Next page smoothly slides fully over the top from the right side
           shadow: false,
-          translate: ["100%", 0, 0],
-          rotate: [0, 0, 0],
+          translate: ["100%", 0, 0], // Perfectly smooth slide out overlay style
           opacity: 1
         },
       },
+      // Intelligent image lazy preloading instead of browser generic rule
+      lazy: {
+        loadPrevNext: true, 
+        loadPrevNextAmount: 2, // Quietly pre-downloads 2 pages ahead/behind in background
+      },
       grabCursor: true,
       simulateTouch: true, 
-      speed: 550, // Polished pacing: snappy, smooth, and natural
+      speed: 450, // Accelerated slightly from 550ms to 450ms for hyper-fluid rendering on older phones
       loop: false,
-      preloadImages: true,
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
     });
