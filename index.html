@@ -14,15 +14,15 @@
       color: #fff;
       overflow: hidden;
       font-family: "Helvetica Neue", sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
     
     /* ----- Quick Access Navigation Tabs ----- */
     .menu-tabs {
-      position: absolute;
-      top: 0;
-      left: 0;
+      flex: 0 0 50px;
       width: 100%;
-      height: 50px;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -59,14 +59,11 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ----- Cascading Marketing Ads Banner ----- */
+    /* ----- Cascading Marketing Ads Banner (Transparent) ----- */
     .promo-banner {
-      position: absolute;
-      top: 50px;
-      left: 0;
+      flex: 0 0 35px;
       width: 100%;
-      height: 35px;
-      background: #cc0000; 
+      background: transparent; /* Makes the ad banner background completely transparent */
       color: #ffffff;      
       z-index: 99;
       overflow: hidden;
@@ -75,7 +72,6 @@
       font-weight: bold;
       font-size: 12px;
       letter-spacing: 1px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
     .promo-track {
       display: flex;
@@ -93,32 +89,38 @@
 
     /* ----- Mobile Swiper Layout ----- */
     .swiper {
+      flex: 1; /* Automatically consumes all remaining vertical space dynamically */
       width: 100vw;
-      height: calc(100vh - 85px);
-      margin-top: 85px; 
       background: #000;
       perspective: 2000px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .swiper-wrapper {
       transform-style: preserve-3d;
+      height: 100%;
       display: flex;
-      align-items: center; /* Vertically centers the slide block inside the wrapper track */
+      align-items: center;
     }
     .swiper-slide {
       display: flex;
       justify-content: center;
-      align-items: center; /* Enforces absolute vertical centering for images on long screen footprints */
+      align-items: center; /* Flawless micro-centering point for mobile aspect ratios */
       background: #000;
       position: relative;
       height: 100%;
+      width: 100%;
+      overflow: hidden;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
     .swiper-slide img {
-      width: 100%;
+      width: auto;
       height: auto;
-      max-height: 100%; /* Prevents the image container from overflowing or sagging downward */
-      object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; 
       border-radius: 12px;
       will-change: transform;
       user-select: none;
@@ -135,7 +137,8 @@
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.3s;
-      top: 50%; /* Keeps navigation arrows dynamically anchored to the true center point */
+      top: 50%; 
+      transform: translateY(-50%);
       z-index: 100;
     }
     .swiper-button-next:hover,
@@ -167,17 +170,18 @@
         width: 500px;
         max-width: 500px;
         left: unset;
+        top: unset;
         transform: unset;
+        flex: unset;
       }
       
       .menu-tabs {
         border-radius: 12px 12px 0 0;
-        top: unset;
         margin-top: 20px;
+        height: 50px;
       }
       
       .promo-banner {
-        top: unset;
         height: 35px;
       }
 
