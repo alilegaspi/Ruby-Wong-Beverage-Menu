@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no" />
   <title>Ruby Wong's Menu</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+  
   <style>
     body {
       margin: 0;
@@ -13,9 +15,56 @@
       overflow: hidden;
       font-family: "Helvetica Neue", sans-serif;
     }
+    
+    /* ----- Quick Access Navigation Tabs ----- */
+    .menu-tabs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+    .tab-btn {
+      flex: 1;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: #ff4d4d; /* Light Red Fill */
+      color: #ffffff;
+      font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
+      font-weight: bold;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .tab-btn:last-child {
+      border-right: none;
+    }
+    .tab-btn:active {
+      background: #ff3333; /* Slightly deeper red on tap */
+    }
+    /* Highlight style for the currently viewed active section */
+    .tab-btn.active-section {
+      background: #cc0000; /* Darker distinct red for focus status */
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ----- Swiper Framework Adjustments ----- */
     .swiper {
       width: 100vw;
-      height: 100vh;
+      height: calc(100vh - 50px);
+      margin-top: 50px;
       background: #000;
       perspective: 2200px;
     }
@@ -41,7 +90,7 @@
       transform-origin: center center;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
-    /* Smooth CSS transition class explicitly used during double-tap actions */
+    /* Smooth CSS animation class explicitly applied during double-tap triggers */
     .swiper-slide img.is-animating {
       transition: transform 0.2s ease-out !important;
     }
@@ -50,6 +99,7 @@
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.3s;
+      top: calc(50% + 25px); /* Balanced layout arrow alignment shift */
     }
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
@@ -65,6 +115,14 @@
   </style>
 </head>
 <body>
+
+  <div class="menu-tabs">
+    <button class="tab-btn active-section" onclick="jumpToCategory('all')">ALL</button>
+    <button class="tab-btn" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
+    <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
+    <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
+  </div>
+
   <div class="swiper">
     <div class="swiper-wrapper"></div>
     <div class="swiper-button-next"></div>
@@ -83,7 +141,7 @@
       wrapper.appendChild(slide);
     }
 
-    // Append two extra pages as the last pages
+    // Append two extra food pages as the last pages
     const extraFiles = [
       "menu/page32.jpg",
       "menu/page33.jpg",
@@ -95,7 +153,7 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Swiper setup -----
+    // ----- Swiper instantiation -----
     const swiper = new Swiper(".swiper", {
       effect: "cube",
       cubeEffect: { shadow: false, slideShadows: false },
@@ -105,6 +163,41 @@
       preloadImages: true,
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
+    });
+
+    // ----- Precise Navigation Target Mapping Config (0-indexed) -----
+    const categoryTargets = {
+      all: 0,         // Page 1 (Index 0)
+      cocktails: 0,   // Page 1 (Index 0)
+      spirits: 17,    // Page 18 (Index 17)
+      food: 31        // Page 32 (Index 31)
+    };
+
+    window.jumpToCategory = (category) => {
+      const index = categoryTargets[category];
+      if (typeof swiper !== 'undefined' && index !== undefined) {
+        swiper.slideTo(index, 500); // Dynamic scroll to targeted slide over 500ms
+      }
+    };
+
+    // Keep tabs highlighted based on active live page scrolling
+    swiper.on("slideChange", () => {
+      const idx = swiper.activeIndex;
+      const buttons = document.querySelectorAll(".tab-btn");
+      buttons.forEach(btn => btn.classList.remove("active-section"));
+
+      if (idx >= categoryTargets.food) {
+        buttons[3].classList.add("active-section"); // Food highlighted
+      } else if (idx >= categoryTargets.spirits) {
+        buttons[2].classList.add("active-section"); // Spirits highlighted
+      } else {
+        buttons[1].classList.add("active-section"); // Cocktails highlighted
+      }
+      
+      // Keep "ALL" active if the user returns to the very first slide
+      if (idx === 0) {
+        buttons[0].classList.add("active-section");
+      }
     });
 
     // ----- Comprehensive Zoom + Edge Bounds Pan Handling -----
@@ -131,7 +224,6 @@
           transformId = requestAnimationFrame(updateTransform);
         };
 
-        // Calculates maximum allowed drag based on current scale and screen margins
         const clampBoundaries = () => {
           if (scale <= 1) {
             moveX = moveY = 0;
@@ -139,9 +231,8 @@
           }
           const rect = img.getBoundingClientRect();
           const viewW = window.innerWidth;
-          const viewH = window.innerHeight;
+          const viewH = window.innerHeight - 50; 
 
-          // X boundary bounds calculation
           if (rect.width > viewW) {
             const maxGetX = (rect.width - viewW) / 2;
             const currentOriginOffset = (viewW / 2 - originX) * (scale - 1);
@@ -153,7 +244,6 @@
             moveX = 0;
           }
 
-          // Y boundary bounds calculation
           if (rect.height > viewH) {
             const maxGetY = (rect.height - viewH) / 2;
             const currentOriginOffset = (viewH / 2 - originY) * (scale - 1);
@@ -178,7 +268,6 @@
           if (typeof swiper !== 'undefined') swiper.allowTouchMove = !isZoomed;
         };
 
-        // Double tap toggle with smooth CSS tracking
         img.addEventListener("touchend", (e) => {
           const now = Date.now();
           if (lastTouchCount === 1 && now - doubleTap < 300 && e.changedTouches.length === 1) {
@@ -197,7 +286,6 @@
           doubleTap = now;
         });
 
-        // Touch start entry point
         img.addEventListener("touchstart", (e) => {
           img.classList.remove("is-animating");
           lastTouchCount = e.touches.length;
@@ -218,7 +306,6 @@
           }
         });
 
-        // Pan and Pinch tracking loops
         img.addEventListener("touchmove", (e) => {
           if (e.touches.length === 1 && isZoomed) {
             e.preventDefault();
@@ -257,7 +344,6 @@
           }
         });
 
-        // Global page turns cleanly clean stale positions
         swiper.on("slideChange", () => {
           scale = 1;
           moveX = moveY = lastX = lastY = 0;
@@ -269,7 +355,6 @@
       });
     };
 
-    // Safely trigger loop instantiation when DOM is ready
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
     } else {
