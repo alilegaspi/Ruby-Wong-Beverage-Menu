@@ -65,7 +65,6 @@
       height: calc(100vh - 50px);
       margin-top: 50px;
       background: #000;
-      /* Softened perspective depth to flatten image rendering and avoid center distortion */
       perspective: 2000px;
     }
     .swiper-wrapper {
@@ -77,7 +76,6 @@
       align-items: center;
       background: #000;
       position: relative;
-      /* Cleans up double layering/ghost reflections during turns */
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
@@ -89,7 +87,6 @@
       will-change: transform;
       user-select: none;
       touch-action: none;
-      /* Ensures the image layer matches container transitions exactly without ghost offsets */
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform: translate3d(0px, 0px, 0px) scale(1);
@@ -170,8 +167,7 @@
 <body>
 
   <div class="menu-tabs">
-    <button class="tab-btn active-section" onclick="jumpToCategory('all')">ALL</button>
-    <button class="tab-btn" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
+    <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
     <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
     <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
   </div>
@@ -185,7 +181,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Render standard clean DOM loops -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
@@ -205,24 +200,21 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Reconfigured Smooth Page Overlap Effect -----
     const swiper = new Swiper(".swiper", {
       effect: "creative",
       grabCursor: true,
       simulateTouch: true,
       loop: false,
-      speed: 450, // Crisp page swing speed
+      speed: 450, 
       watchSlidesProgress: true,
       creativeEffect: {
         limitProgress: 2,
         prev: {
-          // Slide old page leftward while softening opacity to make incoming sheet stand out
           shadow: false,
           translate: ["-20%", 0, -10],
           opacity: 0.4
         },
         next: {
-          // Slide new page completely over the old stack cleanly without 3D Y-axis ghost clipping
           shadow: true,
           translate: ["100%", 0, 0],
           opacity: 1
@@ -232,9 +224,8 @@
       pagination: { el: ".swiper-pagination", clickable: true }
     });
 
-    // ----- Category Targets Mapping Config -----
+    // ----- Updated Category Map Index Positions -----
     const categoryTargets = {
-      all: 0,
       cocktails: 0,
       spirits: 17, 
       food: 31     
@@ -247,22 +238,18 @@
       }
     };
 
-    // Keep tabs highlighted based on active live page scrolling
+    // ----- Rebalanced Tab Highlighter Indexes -----
     swiper.on("slideChange", () => {
       const idx = swiper.activeIndex;
       const buttons = document.querySelectorAll(".tab-btn");
       buttons.forEach(btn => btn.classList.remove("active-section"));
 
       if (idx >= categoryTargets.food) {
-        buttons[3].classList.add("active-section");
+        buttons[2].classList.add("active-section"); // Food
       } else if (idx >= categoryTargets.spirits) {
-        buttons[2].classList.add("active-section");
+        buttons[1].classList.add("active-section"); // Spirits
       } else {
-        buttons[1].classList.add("active-section");
-      }
-      
-      if (idx === 0) {
-        buttons[0].classList.add("active-section");
+        buttons[0].classList.add("active-section"); // Cocktails
       }
     });
 
