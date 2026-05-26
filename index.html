@@ -52,15 +52,14 @@
       border-right: none;
     }
     .tab-btn:active {
-      background: #ff3333; /* Slightly deeper red on tap */
+      background: #ff3333;
     }
-    /* Highlight style for the currently viewed active section */
     .tab-btn.active-section {
-      background: #cc0000; /* Darker distinct red for focus status */
+      background: #cc0000;
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ----- Swiper Framework Adjustments ----- */
+    /* ----- Mobile Swiper Layout (Kept Perfect & Intact) ----- */
     .swiper {
       width: 100vw;
       height: calc(100vh - 50px);
@@ -90,7 +89,6 @@
       transform-origin: center center;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
-    /* Smooth CSS animation class explicitly applied during double-tap triggers */
     .swiper-slide img.is-animating {
       transition: transform 0.2s ease-out !important;
     }
@@ -99,7 +97,7 @@
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.3s;
-      top: calc(50% + 25px); /* Balanced layout arrow alignment shift */
+      top: calc(50% + 25px);
     }
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
@@ -111,6 +109,54 @@
     }
     .swiper-pagination-bullet-active {
       opacity: 1;
+    }
+
+    /* =========================================================================
+       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Strictly isolated above 1024px)
+       ========================================================================= */
+    @media screen and (min-width: 1025px) {
+      body {
+        background: #0d0d0d;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+      }
+      
+      .menu-tabs, .swiper {
+        width: 100%;
+        max-width: 500px; /* Locks menu cleanly into portrait on desktop displays */
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .menu-tabs {
+        border-radius: 12px 12px 0 0;
+        top: 20px;
+      }
+
+      .swiper {
+        height: calc(100vh - 90px);
+        margin-top: 70px;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
+      }
+
+      .swiper-slide img {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+      }
+
+      /* Positions navigation arrows outside the menu frame on PC layout */
+      .swiper-button-prev {
+        left: calc(50% - 300px);
+      }
+      .swiper-button-next {
+        right: calc(50% - 300px);
+      }
     }
   </style>
 </head>
@@ -132,51 +178,68 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Create 31 slides -----
-    const wrapper = document.querySelector(".swiper-wrapper");
+    // ----- Build the Slide Data Array -----
+    const totalPages = 33;
+    const slidesData = [];
+    
+    // Add pages 1 to 31
     for (let i = 1; i <= 31; i++) {
-      const slide = document.createElement("div");
-      slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" loading="lazy" />`;
-      wrapper.appendChild(slide);
+      slidesData.push(`menu/page${i}.jpg`);
     }
+    // Add pages 32 and 33
+    slidesData.push("menu/page32.jpg", "menu/page33.jpg");
 
-    // Append two extra food pages as the last pages
-    const extraFiles = [
-      "menu/page32.jpg",
-      "menu/page33.jpg",
-    ];
-    extraFiles.forEach((path, idx) => {
-      const slide = document.createElement("div");
-      slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" loading="lazy" />`;
-      wrapper.appendChild(slide);
-    });
-
-    // ----- Swiper instantiation -----
+    // ----- Swiper Instantiation with Virtual Rendering + Smart Lazy Loading -----
     const swiper = new Swiper(".swiper", {
       effect: "cube",
       cubeEffect: { shadow: false, slideShadows: false },
       grabCursor: true,
       speed: 650,
       loop: false,
-      preloadImages: true,
+      
+      // Virtual slide loading minimizes mobile DOM size and saves VRAM
+      virtual: {
+        slides: slidesData,
+        renderExternal: function (virtualData) {
+          const wrapper = document.querySelector('.swiper-wrapper');
+          wrapper.innerHTML = ''; // Flushes recycled elements
+          
+          virtualData.slides.forEach((slidePath, index) => {
+            const globalIndex = virtualData.from + index + 1;
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            slide.style.left = `${virtualData.offset}px`;
+            
+            // Uses data-src for advanced progressive loading managed by Swiper
+            slide.innerHTML = `<img data-src="${encodeURI(slidePath)}" class="swiper-lazy" alt="Page ${globalIndex}" />
+                               <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>`;
+            wrapper.appendChild(slide);
+          });
+          
+          // Re-bind touch gesture handlers to newly added dynamic slides
+          initZoomHandlers();
+        }
+      },
+      lazy: {
+        loadPrevNext: true,
+        loadPrevNextAmount: 2 // Preloads up to 2 pages ahead quietly in background
+      },
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
     });
 
-    // ----- Precise Navigation Target Mapping Config (0-indexed) -----
+    // ----- Category Targets Mapping Config -----
     const categoryTargets = {
-      all: 0,         // Page 1 (Index 0)
-      cocktails: 0,   // Page 1 (Index 0)
-      spirits: 17,    // Page 18 (Index 17)
-      food: 31        // Page 32 (Index 31)
+      all: 0,
+      cocktails: 0,
+      spirits: 17, // Page 18
+      food: 31     // Page 32
     };
 
     window.jumpToCategory = (category) => {
       const index = categoryTargets[category];
       if (typeof swiper !== 'undefined' && index !== undefined) {
-        swiper.slideTo(index, 500); // Dynamic scroll to targeted slide over 500ms
+        swiper.slideTo(index, 500); 
       }
     };
 
@@ -187,22 +250,25 @@
       buttons.forEach(btn => btn.classList.remove("active-section"));
 
       if (idx >= categoryTargets.food) {
-        buttons[3].classList.add("active-section"); // Food highlighted
+        buttons[3].classList.add("active-section");
       } else if (idx >= categoryTargets.spirits) {
-        buttons[2].classList.add("active-section"); // Spirits highlighted
+        buttons[2].classList.add("active-section");
       } else {
-        buttons[1].classList.add("active-section"); // Cocktails highlighted
+        buttons[1].classList.add("active-section");
       }
       
-      // Keep "ALL" active if the user returns to the very first slide
       if (idx === 0) {
         buttons[0].classList.add("active-section");
       }
     });
 
     // ----- Comprehensive Zoom + Edge Bounds Pan Handling -----
-    const initZoomHandlers = () => {
+    function initZoomHandlers() {
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
+        // Skips re-binding logic if this dynamic slide was already processed
+        if (img.dataset.zoomInitialized) return;
+        img.dataset.zoomInitialized = "true";
+
         let scale = 1, isZoomed = false;
         let originX = 0, originY = 0;
         let moveX = 0, moveY = 0;
@@ -230,8 +296,9 @@
             return;
           }
           const rect = img.getBoundingClientRect();
-          const viewW = window.innerWidth;
-          const viewH = window.innerHeight - 50; 
+          const swiperContainer = document.querySelector('.swiper');
+          const viewW = swiperContainer.clientWidth;
+          const viewH = swiperContainer.clientHeight; 
 
           if (rect.width > viewW) {
             const maxGetX = (rect.width - viewW) / 2;
@@ -343,23 +410,11 @@
             setTimeout(() => img.classList.remove("is-animating"), 200);
           }
         });
-
-        swiper.on("slideChange", () => {
-          scale = 1;
-          moveX = moveY = lastX = lastY = 0;
-          isZoomed = false;
-          img.style.transformOrigin = "center center";
-          setSwiperLock();
-          updateTransform();
-        });
       });
-    };
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
-    } else {
-      setTimeout(initZoomHandlers, 150);
     }
+
+    // Secondary layer initialization safeguard
+    setTimeout(initZoomHandlers, 200);
   </script>
 </body>
 </html>
