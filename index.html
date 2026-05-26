@@ -419,4 +419,59 @@
         });
 
         img.addEventListener("touchmove", (e) => {
-          if (e
+          if (e.touches.length === 1 && isZoomed) {
+            e.preventDefault();
+            moveX = e.touches[0].clientX - startX;
+            moveY = e.touches[0].clientY - startY;
+            clampBoundaries();
+            lastX = moveX;
+            lastY = moveY;
+          } else if (e.touches.length === 2) {
+            e.preventDefault();
+            const dx = e.touches[1].pageX - e.touches[0].pageX;
+            const dy = e.touches[1].pageY - e.touches[0].pageY;
+            const dist = Math.hypot(dx, dy);
+            if (!startDist) startDist = dist;
+            
+            scale = Math.min(Math.max(startScale * (dist / startDist), 1), 4);
+            isZoomed = scale > 1.05;
+            clampBoundaries();
+            setSwiperLock();
+          }
+          requestTransformUpdate();
+        }, { passive: false });
+
+        img.addEventListener("touchend", (e) => {
+          startDist = 0;
+          startScale = scale;
+          if (scale <= 1.05) {
+            img.classList.add("is-animating");
+            scale = 1;
+            isZoomed = false;
+            moveX = moveY = lastX = lastY = 0;
+            img.style.transformOrigin = "center center";
+            setSwiperLock();
+            updateTransform();
+            setTimeout(() => img.classList.remove("is-animating"), 200);
+          }
+        });
+
+        swiper.on("slideChange", () => {
+          scale = 1;
+          moveX = moveY = lastX = lastY = 0;
+          isZoomed = false;
+          img.style.transformOrigin = "center center";
+          setSwiperLock();
+          updateTransform();
+        });
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
+    } else {
+      setTimeout(initZoomHandlers, 150);
+    }
+  </script>
+</body>
+</html>
