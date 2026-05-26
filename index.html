@@ -14,122 +14,226 @@
       color: #fff;
       overflow: hidden;
       font-family: "Helvetica Neue", sans-serif;
-      height: 100vh;
       display: flex;
       flex-direction: column;
+      height: 100vh;
     }
     
-    /* Fixed Header Wrapper */
-    .header-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      background: #000;
-    }
-
+    /* ----- Quick Access Navigation Tabs ----- */
     .menu-tabs {
-      height: 25px;
+      flex: 0 0 25px; /* Height reduced by half from 50px */
       width: 100%;
       display: flex;
       justify-content: space-around;
       align-items: center;
       background: rgba(0, 0, 0, 0.9);
+      z-index: 100;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
     }
-    
     .tab-btn {
       flex: 1;
       height: 100%;
       border: none;
+      outline: none;
       background: #ff4d4d;
       color: #ffffff;
-      font-family: "Shanghai", "Cinzel Decorative", sans-serif;
+      font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
       font-weight: bold;
-      font-size: 11px;
+      font-size: 11px; /* Scaled down slightly to fit the shorter bar snugly */
+      letter-spacing: 0.5px;
       cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
       border-right: 1px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    .tab-btn.active-section { background: #cc0000; }
+    .tab-btn:last-child {
+      border-right: none;
+    }
+    .tab-btn:active {
+      background: #ff3333;
+    }
+    .tab-btn.active-section {
+      background: #cc0000;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+    }
 
+    /* ----- Cascading Marketing Ads Banner (Transparent) ----- */
     .promo-banner {
-      height: 35px;
+      position: fixed; /* Pins it to the top of the viewport */
+      top: 25px;       /* Starts exactly below your 25px tabs */
+      left: 0;
       width: 100%;
+      height: 35px;
+      background: transparent; 
+      color: #ffffff;      
+      z-index: 1000;   /* High z-index ensures it sits above the zoomed image */
       overflow: hidden;
       display: flex;
       align-items: center;
       font-weight: bold;
       font-size: 12px;
-      pointer-events: none;
+      letter-spacing: 1px;
+      pointer-events: none; /* Allows touch/zoom gestures to pass through to the image underneath */
     }
-
     .promo-track {
       display: flex;
       width: max-content;
       animation: scrollAds 90s linear infinite;
     }
-    .promo-text { padding: 0 40px; white-space: nowrap; }
+    .promo-text {
+      padding: 0 40px;
+      white-space: nowrap;
+    }
     @keyframes scrollAds {
       0% { transform: translate3d(0, 0, 0); }
       100% { transform: translate3d(-50%, 0, 0); }
     }
 
-    /* Main Swiper Container */
-    .swiper {
-      flex: 1;
+    /* ----- Mobile Swiper Layout ----- */
+   .swiper {
+      flex: 1; 
       width: 100vw;
       background: #000;
-      margin-top: 60px; /* Offset for 25px tabs + 35px banner */
-      height: calc(100vh - 60px);
-      box-sizing: border-box;
+      perspective: 2000px;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      perspective: 2000px;
+      /* Add padding top to account for the 25px tabs + 35px banner = 60px total offset */
+      padding-top: 60px; 
+      box-sizing: border-box; /* Ensures padding doesn't break the layout */
     }
-
+    .swiper-wrapper {
+      transform-style: preserve-3d;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
+    }
     .swiper-slide {
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      width: 100%;
+      align-items: flex-start; 
+      background: #000;
+      position: relative;
       height: 100%;
+      width: 100%;
       overflow: hidden;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
-
     .swiper-slide img {
       width: auto;
       height: auto;
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain;
+      object-fit: contain; 
       border-radius: 12px;
-      touch-action: none;
+      will-change: transform;
       user-select: none;
+      touch-action: none;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
+    .swiper-slide img.is-animating {
+      transition: transform 0.2s ease-out !important;
+    }
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: #fff;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+      top: 50%; 
+      transform: translateY(-50%);
+      z-index: 100;
+    }
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+      opacity: 1;
+    }
+    .swiper-pagination-bullet {
+      background: #fff !important;
+      opacity: 0.5;
+    }
+    .swiper-pagination-bullet-active {
+      opacity: 1;
+    }
 
-    /* Desktop View */
+    /* =========================================================================
+       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Unified containment layout)
+       ========================================================================= */
     @media screen and (min-width: 1025px) {
-      body { background: #0d0d0d; display: grid; place-items: center; }
-      .header-wrapper, .swiper { width: 500px; position: relative; margin-top: 20px; }
-      .swiper { border-radius: 0 0 12px 12px; height: calc(100vh - 120px); }
+      body {
+        background: #0d0d0d;
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        width: 100vw;
+      }
+      
+      .menu-tabs, .promo-banner, .swiper {
+        position: relative;
+        width: 500px;
+        max-width: 500px;
+        left: unset;
+        top: unset;
+        transform: unset;
+        flex: unset;
+      }
+      
+      .menu-tabs {
+        border-radius: 12px 12px 0 0;
+        margin-top: 20px;
+        height: 25px; /* Matches mobile reduction */
+      }
+      
+      .promo-banner {
+        height: 35px;
+      }
+
+      .swiper {
+        /* If your tabs/banner are fixed on desktop, update this calc: */
+        height: calc(100vh - 60px); 
+        margin-top: 60px; /* Moves the whole swiper block down */
+        border-radius: 0 0 12px 12px;
+      }
+
+      .swiper-slide img {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+      }
+
+      .swiper-button-prev {
+        left: calc(50% - 310px);
+        top: 50%;
+      }
+      .swiper-button-next {
+        right: calc(50% - 310px);
+        top: 50%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="header-wrapper">
-    <div class="menu-tabs">
-      <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
-      <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
-      <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
-    </div>
-    <div class="promo-banner">
-      <div class="promo-track">
-        <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE! 🍹 | ✨ HAPPY HOUR: 7-9 PM! 🍸 | 🎷 LIVE JAZZ: Fri & Sat 8:30 PM! 🎶</span>
-      </div>
+  <div class="menu-tabs">
+    <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
+    <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
+    <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
+  </div>
+
+  <div class="promo-banner">
+    <div class="promo-track">
+      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
+      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
     </div>
   </div>
 
@@ -137,24 +241,244 @@
     <div class="swiper-wrapper"></div>
     <div class="swiper-button-next"></div>
     <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const wrapper = document.querySelector(".swiper-wrapper");
-    for (let i = 1; i <= 33; i++) {
+    for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
       slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />`;
       wrapper.appendChild(slide);
     }
 
+    const extraFiles = [
+      "menu/page32.jpg",
+      "menu/page33.jpg",
+    ];
+    extraFiles.forEach((path, idx) => {
+      const slide = document.createElement("div");
+      slide.className = "swiper-slide";
+      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" />`;
+      wrapper.appendChild(slide);
+    });
+
     const swiper = new Swiper(".swiper", {
       effect: "creative",
-      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }
+      grabCursor: true,
+      simulateTouch: true,
+      loop: false,
+      speed: 450, 
+      watchSlidesProgress: true,
+      creativeEffect: {
+        limitProgress: 2,
+        prev: {
+          shadow: false,
+          translate: ["-20%", 0, -10],
+          opacity: 0.4
+        },
+        next: {
+          shadow: true,
+          translate: ["100%", 0, 0],
+          opacity: 1
+        },
+      },
+      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+      pagination: { el: ".swiper-pagination", clickable: true }
     });
-    
-    // Existing zoom logic would be appended here...
+
+    const categoryTargets = {
+      cocktails: 0,
+      spirits: 17, 
+      food: 31     
+    };
+
+    window.jumpToCategory = (category) => {
+      const index = categoryTargets[category];
+      if (typeof swiper !== 'undefined' && index !== undefined) {
+        swiper.slideTo(index, 500); 
+      }
+    };
+
+    swiper.on("slideChange", () => {
+      const idx = swiper.activeIndex;
+      const buttons = document.querySelectorAll(".tab-btn");
+      buttons.forEach(btn => btn.classList.remove("active-section"));
+
+      if (idx >= categoryTargets.food) {
+        buttons[2].classList.add("active-section");
+      } else if (idx >= categoryTargets.spirits) {
+        buttons[1].classList.add("active-section");
+      } else {
+        buttons[0].classList.add("active-section");
+      }
+    });
+
+    // ----- Zoom & Edge Boundaries Pan Mechanism -----
+    const initZoomHandlers = () => {
+      document.querySelectorAll(".swiper-slide img").forEach((img) => {
+        let scale = 1, isZoomed = false;
+        let originX = 0, originY = 0;
+        let moveX = 0, moveY = 0;
+        let lastX = 0, lastY = 0;
+        let startX = 0, startY = 0;
+        let startDist = 0;
+        let lastTouchCount = 0;
+        let startScale = 1;
+        let doubleTap = 0;
+        let transformId = null;
+
+        const updateTransform = () => {
+          img.style.transformOrigin = `${originX}px ${originY}px`;
+          img.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale})`;
+        };
+
+        const requestTransformUpdate = () => {
+          if (transformId) cancelAnimationFrame(transformId);
+          transformId = requestAnimationFrame(updateTransform);
+        };
+
+        const clampBoundaries = () => {
+          if (scale <= 1) {
+            moveX = moveY = 0;
+            return;
+          }
+          const rect = img.getBoundingClientRect();
+          const swiperContainer = document.querySelector('.swiper');
+          const viewW = swiperContainer.clientWidth;
+          const viewH = swiperContainer.clientHeight; 
+
+          if (rect.width > viewW) {
+            const maxGetX = (rect.width - viewW) / 2;
+            const currentOriginOffset = (viewW / 2 - originX) * (scale - 1);
+            const relativeX = moveX + currentOriginOffset;
+            if (Math.abs(relativeX) > maxGetX) {
+              moveX = (relativeX > 0 ? maxGetX : -maxGetX) - currentOriginOffset;
+            }
+          } else {
+            moveX = 0;
+          }
+
+          if (rect.height > viewH) {
+            const maxGetY = (rect.height - viewH) / 2;
+            const currentOriginOffset = (viewH / 2 - originY) * (scale - 1);
+            const relativeY = moveY + currentOriginOffset;
+            if (Math.abs(relativeY) > maxGetY) {
+              moveY = (relativeY > 0 ? maxGetY : -maxGetY) - currentOriginOffset;
+            }
+          } else {
+            moveY = 0;
+          }
+        };
+
+        const setOrigin = (touch) => {
+          const rect = img.getBoundingClientRect();
+          const unscaledW = rect.width / scale;
+          const unscaledH = rect.height / scale;
+          originX = Math.max(0, Math.min(unscaledW, (touch.clientX - rect.left) / scale));
+          originY = Math.max(0, Math.min(unscaledH, (touch.clientY - rect.top) / scale));
+        };
+
+        const setSwiperLock = () => {
+          if (typeof swiper !== 'undefined' && swiper.params) {
+            swiper.allowTouchMove = !isZoomed;
+          }
+        };
+
+        img.addEventListener("touchend", (e) => {
+          const now = Date.now();
+          if (lastTouchCount === 1 && now - doubleTap < 300 && e.changedTouches.length === 1) {
+            img.classList.add("is-animating");
+            setOrigin(e.changedTouches[0]);
+            isZoomed = !isZoomed;
+            scale = isZoomed ? 2.5 : 1;
+            moveX = moveY = lastX = lastY = 0;
+            
+            if (isZoomed) clampBoundaries();
+            setSwiperLock();
+            updateTransform();
+
+            setTimeout(() => img.classList.remove("is-animating"), 200);
+          }
+          doubleTap = now;
+        });
+
+        img.addEventListener("touchstart", (e) => {
+          img.classList.remove("is-animating");
+          lastTouchCount = e.touches.length;
+          
+          if (e.touches.length === 1 && isZoomed) {
+            startX = e.touches[0].clientX - lastX;
+            startY = e.touches[0].clientY - lastY;
+          } else if (e.touches.length === 2) {
+            const dx = e.touches[1].pageX - e.touches[0].pageX;
+            const dy = e.touches[1].pageY - e.touches[0].pageY;
+            startDist = Math.hypot(dx, dy);
+            startScale = scale;
+            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            setOrigin({ clientX: midX, clientY: midY });
+            isZoomed = true;
+            setSwiperLock();
+          }
+        });
+
+        img.addEventListener("touchmove", (e) => {
+          if (e.touches.length === 1 && isZoomed) {
+            e.preventDefault();
+            moveX = e.touches[0].clientX - startX;
+            moveY = e.touches[0].clientY - startY;
+            clampBoundaries();
+            lastX = moveX;
+            lastY = moveY;
+          } else if (e.touches.length === 2) {
+            e.preventDefault();
+            const dx = e.touches[1].pageX - e.touches[0].pageX;
+            const dy = e.touches[1].pageY - e.touches[0].pageY;
+            const dist = Math.hypot(dx, dy);
+            if (!startDist) startDist = dist;
+            
+            scale = Math.min(Math.max(startScale * (dist / startDist), 1), 4);
+            isZoomed = scale > 1.05;
+            clampBoundaries();
+            setSwiperLock();
+          }
+          requestTransformUpdate();
+        }, { passive: false });
+
+        img.addEventListener("touchend", (e) => {
+          startDist = 0;
+          startScale = scale;
+          if (scale <= 1.05) {
+            img.classList.add("is-animating");
+            scale = 1;
+            isZoomed = false;
+            moveX = moveY = lastX = lastY = 0;
+            img.style.transformOrigin = "center center";
+            setSwiperLock();
+            updateTransform();
+            setTimeout(() => img.classList.remove("is-animating"), 200);
+          }
+        });
+
+        swiper.on("slideChange", () => {
+          scale = 1;
+          moveX = moveY = lastX = lastY = 0;
+          isZoomed = false;
+          img.style.transformOrigin = "center center";
+          setSwiperLock();
+          updateTransform();
+        });
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
+    } else {
+      setTimeout(initZoomHandlers, 150);
+    }
   </script>
 </body>
 </html>
