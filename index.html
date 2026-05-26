@@ -111,6 +111,13 @@
       opacity: 1;
     }
 
+    /* Adds realistic dark gradients to the 3D page fold during the flip */
+    .swiper-slide-shadow-left,
+    .swiper-slide-shadow-right {
+      border-radius: 12px;
+      background-image: linear-gradient(to right, rgba(0,0,0,0.5), rgba(0,0,0,0)) !important;
+    }
+
     /* =========================================================================
        🖥️ PC / DESKTOP ONLY MEDIA QUERY (Fixed Alignment and Centered Perfectly)
        ========================================================================= */
@@ -123,7 +130,6 @@
         width: 100vw;
       }
       
-      /* Wrapper/Container constraints for standard layout flow */
       .menu-tabs, .swiper {
         position: relative;
         width: 500px;
@@ -151,7 +157,6 @@
         max-width: 100%;
       }
 
-      /* Desktop Arrow Navigation Positions */
       .swiper-button-prev {
         left: calc(50% - 310px);
         top: 50%;
@@ -201,13 +206,17 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Standard Swiper Instantiation -----
+    // ----- Updated Swiper Instantiation with Book Flip Transition -----
     const swiper = new Swiper(".swiper", {
-      effect: "cube",
-      cubeEffect: { shadow: false, slideShadows: false },
+      effect: "flip", // Revised animation to realistic 3D book-style flip
+      flipEffect: { 
+        shadow: true, 
+        slideShadows: true, 
+        limitRotation: true 
+      },
       grabCursor: true,
       simulateTouch: true, 
-      speed: 650,
+      speed: 700, // Smooth turn velocity
       loop: false,
       preloadImages: true,
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
