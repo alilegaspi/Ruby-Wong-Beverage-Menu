@@ -59,7 +59,7 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ----- Mobile Swiper Layout (Kept Perfect & Intact) ----- */
+    /* ----- Mobile Swiper Layout (Restored Original State) ----- */
     .swiper {
       width: 100vw;
       height: calc(100vh - 50px);
@@ -127,7 +127,7 @@
       
       .menu-tabs, .swiper {
         width: 100%;
-        max-width: 500px; /* Locks menu cleanly into portrait on desktop displays */
+        max-width: 500px;
         left: 50%;
         transform: translateX(-50%);
       }
@@ -150,7 +150,6 @@
         max-width: 100%;
       }
 
-      /* Positions navigation arrows outside the menu frame on PC layout */
       .swiper-button-prev {
         left: calc(50% - 300px);
       }
@@ -178,52 +177,34 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Build the Slide Data Array -----
-    const totalPages = 33;
-    const slidesData = [];
-    
-    // Add pages 1 to 31
+    // ----- Restored: Simple, Static DOM Generation Loop -----
+    const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
-      slidesData.push(`menu/page${i}.jpg`);
+      const slide = document.createElement("div");
+      slide.className = "swiper-slide";
+      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" loading="lazy" />`;
+      wrapper.appendChild(slide);
     }
-    // Add pages 32 and 33
-    slidesData.push("menu/page32.jpg", "menu/page33.jpg");
 
-    // ----- Swiper Instantiation with Virtual Rendering + Smart Lazy Loading -----
+    const extraFiles = [
+      "menu/page32.jpg",
+      "menu/page33.jpg",
+    ];
+    extraFiles.forEach((path, idx) => {
+      const slide = document.createElement("div");
+      slide.className = "swiper-slide";
+      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" loading="lazy" />`;
+      wrapper.appendChild(slide);
+    });
+
+    // ----- Standard Swiper Instantiation -----
     const swiper = new Swiper(".swiper", {
       effect: "cube",
       cubeEffect: { shadow: false, slideShadows: false },
       grabCursor: true,
       speed: 650,
       loop: false,
-      
-      // Virtual slide loading minimizes mobile DOM size and saves VRAM
-      virtual: {
-        slides: slidesData,
-        renderExternal: function (virtualData) {
-          const wrapper = document.querySelector('.swiper-wrapper');
-          wrapper.innerHTML = ''; // Flushes recycled elements
-          
-          virtualData.slides.forEach((slidePath, index) => {
-            const globalIndex = virtualData.from + index + 1;
-            const slide = document.createElement('div');
-            slide.className = 'swiper-slide';
-            slide.style.left = `${virtualData.offset}px`;
-            
-            // Uses data-src for advanced progressive loading managed by Swiper
-            slide.innerHTML = `<img data-src="${encodeURI(slidePath)}" class="swiper-lazy" alt="Page ${globalIndex}" />
-                               <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>`;
-            wrapper.appendChild(slide);
-          });
-          
-          // Re-bind touch gesture handlers to newly added dynamic slides
-          initZoomHandlers();
-        }
-      },
-      lazy: {
-        loadPrevNext: true,
-        loadPrevNextAmount: 2 // Preloads up to 2 pages ahead quietly in background
-      },
+      preloadImages: true,
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true },
     });
@@ -263,12 +244,8 @@
     });
 
     // ----- Comprehensive Zoom + Edge Bounds Pan Handling -----
-    function initZoomHandlers() {
+    const initZoomHandlers = () => {
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
-        // Skips re-binding logic if this dynamic slide was already processed
-        if (img.dataset.zoomInitialized) return;
-        img.dataset.zoomInitialized = "true";
-
         let scale = 1, isZoomed = false;
         let originX = 0, originY = 0;
         let moveX = 0, moveY = 0;
@@ -332,7 +309,9 @@
         };
 
         const setSwiperLock = () => {
-          if (typeof swiper !== 'undefined') swiper.allowTouchMove = !isZoomed;
+          if (typeof swiper !== 'undefined' && swiper.params) {
+            swiper.allowTouchMove = !isZoomed;
+          }
         };
 
         img.addEventListener("touchend", (e) => {
@@ -410,11 +389,24 @@
             setTimeout(() => img.classList.remove("is-animating"), 200);
           }
         });
-      });
-    }
 
-    // Secondary layer initialization safeguard
-    setTimeout(initZoomHandlers, 200);
+        swiper.on("slideChange", () => {
+          scale = 1;
+          moveX = moveY = lastX = lastY = 0;
+          isZoomed = false;
+          img.style.transformOrigin = "center center";
+          setSwiperLock();
+          updateTransform();
+        });
+      });
+    };
+
+    // Safely trigger loop instantiation when DOM is ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
+    } else {
+      setTimeout(initZoomHandlers, 150);
+    }
   </script>
 </body>
 </html>
