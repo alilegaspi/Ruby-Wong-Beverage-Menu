@@ -59,7 +59,7 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ----- Mobile Swiper Layout (Restored Original State) ----- */
+    /* ----- Mobile Swiper Layout ----- */
     .swiper {
       width: 100vw;
       height: calc(100vh - 50px);
@@ -112,34 +112,35 @@
     }
 
     /* =========================================================================
-       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Strictly isolated above 1024px)
+       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Fixed Alignment and Centered Perfectly)
        ========================================================================= */
     @media screen and (min-width: 1025px) {
       body {
         background: #0d0d0d;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        display: grid;
+        place-items: center;
         height: 100vh;
         width: 100vw;
       }
       
+      /* Wrapper/Container constraints for standard layout flow */
       .menu-tabs, .swiper {
-        width: 100%;
+        position: relative;
+        width: 500px;
         max-width: 500px;
-        left: 50%;
-        transform: translateX(-50%);
+        left: unset;
+        transform: unset;
       }
       
       .menu-tabs {
         border-radius: 12px 12px 0 0;
-        top: 20px;
+        top: unset;
+        margin-top: 20px;
       }
 
       .swiper {
-        height: calc(100vh - 90px);
-        margin-top: 70px;
+        height: calc(100vh - 110px);
+        margin-top: 0px;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
       }
@@ -150,11 +151,14 @@
         max-width: 100%;
       }
 
+      /* Desktop Arrow Navigation Positions */
       .swiper-button-prev {
-        left: calc(50% - 300px);
+        left: calc(50% - 310px);
+        top: 50%;
       }
       .swiper-button-next {
-        right: calc(50% - 300px);
+        right: calc(50% - 310px);
+        top: 50%;
       }
     }
   </style>
@@ -202,6 +206,7 @@
       effect: "cube",
       cubeEffect: { shadow: false, slideShadows: false },
       grabCursor: true,
+      simulateTouch: true, 
       speed: 650,
       loop: false,
       preloadImages: true,
@@ -401,7 +406,6 @@
       });
     };
 
-    // Safely trigger loop instantiation when DOM is ready
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
     } else {
