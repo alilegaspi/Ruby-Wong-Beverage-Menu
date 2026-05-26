@@ -14,15 +14,15 @@
       color: #fff;
       overflow: hidden;
       font-family: "Helvetica Neue", sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
     
     /* ----- Quick Access Navigation Tabs ----- */
     .menu-tabs {
-      position: absolute;
-      top: 0;
-      left: 0;
+      flex: 0 0 25px; /* Height reduced by half from 50px */
       width: 100%;
-      height: 50px;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -39,7 +39,7 @@
       color: #ffffff;
       font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 11px; /* Scaled down slightly to fit the shorter bar snugly */
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: background 0.2s, box-shadow 0.2s;
@@ -59,32 +59,74 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
+    /* ----- Cascading Marketing Ads Banner (Transparent) ----- */
+    .promo-banner {
+      flex: 0 0 35px;
+      width: 100%;
+      background: transparent; 
+      color: #ffffff;      
+      z-index: 99;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .promo-track {
+      display: flex;
+      width: max-content;
+      animation: scrollAds 45s linear infinite;
+    }
+    .promo-text {
+      padding: 0 40px;
+      white-space: nowrap;
+    }
+    @keyframes scrollAds {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
     /* ----- Mobile Swiper Layout ----- */
     .swiper {
+      flex: 1; 
       width: 100vw;
-      height: calc(100vh - 50px);
-      margin-top: 50px;
       background: #000;
-      /* Forces mobile browser to keep rendering engine active */
-      -webkit-transform: translate3d(0,0,0);
-      transform: translate3d(0,0,0);
+      perspective: 2000px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .swiper-wrapper {
+      transform-style: preserve-3d;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
     }
     .swiper-slide {
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; 
       background: #000;
       position: relative;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .swiper-slide img {
-      width: 100%;
+      width: auto;
       height: auto;
-      object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; 
       border-radius: 12px;
       will-change: transform;
       user-select: none;
       touch-action: none;
-      transform-origin: center center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
     .swiper-slide img.is-animating {
@@ -95,7 +137,9 @@
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.3s;
-      top: calc(50% + 25px);
+      top: 50%; 
+      transform: translateY(-50%);
+      z-index: 100;
     }
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
@@ -110,7 +154,7 @@
     }
 
     /* =========================================================================
-       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Fixed Alignment and Centered Perfectly)
+       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Unified containment layout)
        ========================================================================= */
     @media screen and (min-width: 1025px) {
       body {
@@ -121,22 +165,28 @@
         width: 100vw;
       }
       
-      .menu-tabs, .swiper {
+      .menu-tabs, .promo-banner, .swiper {
         position: relative;
         width: 500px;
         max-width: 500px;
         left: unset;
+        top: unset;
         transform: unset;
+        flex: unset;
       }
       
       .menu-tabs {
         border-radius: 12px 12px 0 0;
-        top: unset;
         margin-top: 20px;
+        height: 25px; /* Matches mobile reduction */
+      }
+      
+      .promo-banner {
+        height: 35px;
       }
 
       .swiper {
-        height: calc(100vh - 110px);
+        height: calc(100vh - 120px); /* Recalculated dynamic footprint drop to match shorter tabs */
         margin-top: 0px;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
@@ -162,10 +212,22 @@
 <body>
 
   <div class="menu-tabs">
-    <button class="tab-btn active-section" onclick="jumpToCategory('all')">ALL</button>
-    <button class="tab-btn" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
+    <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
     <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
     <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
+  </div>
+
+  <div class="promo-banner">
+    <div class="promo-track">
+      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
+      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
+    </div>
   </div>
 
   <div class="swiper">
@@ -177,7 +239,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Render standard paths instantly without relying on lazy setups -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
@@ -197,46 +258,31 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Responsive Configuration Strategy -----
-    // Detect viewport size dynamically
-    const isDesktop = window.innerWidth >= 1025;
-
-    const swiperOptions = {
+    const swiper = new Swiper(".swiper", {
+      effect: "creative",
       grabCursor: true,
       simulateTouch: true,
       loop: false,
-      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-      pagination: { el: ".swiper-pagination", clickable: true }
-    };
-
-    if (isDesktop) {
-      // Premium book slide effect exclusively for PC monitors
-      swiperOptions.effect = "creative";
-      swiperOptions.speed = 450;
-      swiperOptions.creativeEffect = {
+      speed: 450, 
+      watchSlidesProgress: true,
+      creativeEffect: {
         limitProgress: 2,
         prev: {
-          shadow: true,
-          translate: ["-20%", 0, 0],
-          opacity: 0.6
+          shadow: false,
+          translate: ["-20%", 0, -10],
+          opacity: 0.4
         },
         next: {
-          shadow: false,
+          shadow: true,
           translate: ["100%", 0, 0],
           opacity: 1
-        }
-      };
-    } else {
-      // Hyper-optimized, zero-crash default hardware translation for phones
-      swiperOptions.effect = "slide";
-      swiperOptions.speed = 350; // Snappy touch response
-    }
+        },
+      },
+      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+      pagination: { el: ".swiper-pagination", clickable: true }
+    });
 
-    const swiper = new Swiper(".swiper", swiperOptions);
-
-    // ----- Category Targets Mapping Config -----
     const categoryTargets = {
-      all: 0,
       cocktails: 0,
       spirits: 17, 
       food: 31     
@@ -249,26 +295,21 @@
       }
     };
 
-    // Keep tabs highlighted based on active live page scrolling
     swiper.on("slideChange", () => {
       const idx = swiper.activeIndex;
       const buttons = document.querySelectorAll(".tab-btn");
       buttons.forEach(btn => btn.classList.remove("active-section"));
 
       if (idx >= categoryTargets.food) {
-        buttons[3].classList.add("active-section");
-      } else if (idx >= categoryTargets.spirits) {
         buttons[2].classList.add("active-section");
-      } else {
+      } else if (idx >= categoryTargets.spirits) {
         buttons[1].classList.add("active-section");
-      }
-      
-      if (idx === 0) {
+      } else {
         buttons[0].classList.add("active-section");
       }
     });
 
-    // ----- Comprehensive Zoom + Edge Bounds Pan Handling -----
+    // ----- Zoom & Edge Boundaries Pan Mechanism -----
     const initZoomHandlers = () => {
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
         let scale = 1, isZoomed = false;
