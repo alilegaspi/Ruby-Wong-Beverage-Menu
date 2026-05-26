@@ -14,15 +14,15 @@
       color: #fff;
       overflow: hidden;
       font-family: "Helvetica Neue", sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
     }
     
     /* ----- Quick Access Navigation Tabs ----- */
     .menu-tabs {
-      flex: 0 0 25px; /* Height reduced by half from 50px */
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
+      height: 50px;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -39,7 +39,7 @@
       color: #ffffff;
       font-family: "Shanghai", "Cinzel Decorative", "Helvetica Neue", sans-serif;
       font-weight: bold;
-      font-size: 11px; /* Scaled down slightly to fit the shorter bar snugly */
+      font-size: 13px;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: background 0.2s, box-shadow 0.2s;
@@ -59,81 +59,32 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
     }
 
-    /* ----- Cascading Marketing Ads Banner (Transparent) ----- */
-    .promo-banner {
-      position: fixed; /* Pins it to the top of the viewport */
-      top: 25px;       /* Starts exactly below your 25px tabs */
-      left: 0;
-      width: 100%;
-      height: 35px;
-      background: transparent; 
-      color: #ffffff;      
-      z-index: 1000;   /* High z-index ensures it sits above the zoomed image */
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 12px;
-      letter-spacing: 1px;
-      pointer-events: none; /* Allows touch/zoom gestures to pass through to the image underneath */
-    }
-    .promo-track {
-      display: flex;
-      width: max-content;
-      animation: scrollAds 90s linear infinite;
-    }
-    .promo-text {
-      padding: 0 40px;
-      white-space: nowrap;
-    }
-    @keyframes scrollAds {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-50%, 0, 0); }
-    }
-
     /* ----- Mobile Swiper Layout ----- */
-   .swiper {
-      flex: 1; 
+    .swiper {
       width: 100vw;
+      height: calc(100vh - 50px);
+      margin-top: 50px;
       background: #000;
-      perspective: 2000px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      /* Add padding top to account for the 25px tabs + 35px banner = 60px total offset */
-      padding-top: 60px; 
-      box-sizing: border-box; /* Ensures padding doesn't break the layout */
-    }
-    .swiper-wrapper {
-      transform-style: preserve-3d;
-      height: 100%;
-      display: flex;
-      align-items: flex-start;
+      /* Forces mobile browser to keep rendering engine active */
+      -webkit-transform: translate3d(0,0,0);
+      transform: translate3d(0,0,0);
     }
     .swiper-slide {
       display: flex;
       justify-content: center;
-      align-items: flex-start; 
+      align-items: center;
       background: #000;
       position: relative;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
     }
     .swiper-slide img {
-      width: auto;
+      width: 100%;
       height: auto;
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain; 
+      object-fit: contain;
       border-radius: 12px;
       will-change: transform;
       user-select: none;
       touch-action: none;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      transform-origin: center center;
       transform: translate3d(0px, 0px, 0px) scale(1);
     }
     .swiper-slide img.is-animating {
@@ -144,9 +95,7 @@
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.3s;
-      top: 50%; 
-      transform: translateY(-50%);
-      z-index: 100;
+      top: calc(50% + 25px);
     }
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
@@ -161,7 +110,7 @@
     }
 
     /* =========================================================================
-       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Unified containment layout)
+       🖥️ PC / DESKTOP ONLY MEDIA QUERY (Fixed Alignment and Centered Perfectly)
        ========================================================================= */
     @media screen and (min-width: 1025px) {
       body {
@@ -172,31 +121,25 @@
         width: 100vw;
       }
       
-      .menu-tabs, .promo-banner, .swiper {
+      .menu-tabs, .swiper {
         position: relative;
         width: 500px;
         max-width: 500px;
         left: unset;
-        top: unset;
         transform: unset;
-        flex: unset;
       }
       
       .menu-tabs {
         border-radius: 12px 12px 0 0;
+        top: unset;
         margin-top: 20px;
-        height: 25px; /* Matches mobile reduction */
-      }
-      
-      .promo-banner {
-        height: 35px;
       }
 
       .swiper {
-        /* If your tabs/banner are fixed on desktop, update this calc: */
-        height: calc(100vh - 60px); 
-        margin-top: 60px; /* Moves the whole swiper block down */
+        height: calc(100vh - 110px);
+        margin-top: 0px;
         border-radius: 0 0 12px 12px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
       }
 
       .swiper-slide img {
@@ -219,22 +162,10 @@
 <body>
 
   <div class="menu-tabs">
-    <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
+    <button class="tab-btn active-section" onclick="jumpToCategory('all')">ALL</button>
+    <button class="tab-btn" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
     <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
     <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
-  </div>
-
-  <div class="promo-banner">
-    <div class="promo-track">
-      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
-      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
-      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
-      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
-      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
-      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
-      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
-      <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
-    </div>
   </div>
 
   <div class="swiper">
@@ -246,6 +177,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
+    // ----- Render standard paths instantly without relying on lazy setups -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
@@ -265,31 +197,46 @@
       wrapper.appendChild(slide);
     });
 
-    const swiper = new Swiper(".swiper", {
-      effect: "creative",
+    // ----- Responsive Configuration Strategy -----
+    // Detect viewport size dynamically
+    const isDesktop = window.innerWidth >= 1025;
+
+    const swiperOptions = {
       grabCursor: true,
       simulateTouch: true,
       loop: false,
-      speed: 450, 
-      watchSlidesProgress: true,
-      creativeEffect: {
-        limitProgress: 2,
-        prev: {
-          shadow: false,
-          translate: ["-20%", 0, -10],
-          opacity: 0.4
-        },
-        next: {
-          shadow: true,
-          translate: ["100%", 0, 0],
-          opacity: 1
-        },
-      },
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
       pagination: { el: ".swiper-pagination", clickable: true }
-    });
+    };
 
+    if (isDesktop) {
+      // Premium book slide effect exclusively for PC monitors
+      swiperOptions.effect = "creative";
+      swiperOptions.speed = 450;
+      swiperOptions.creativeEffect = {
+        limitProgress: 2,
+        prev: {
+          shadow: true,
+          translate: ["-20%", 0, 0],
+          opacity: 0.6
+        },
+        next: {
+          shadow: false,
+          translate: ["100%", 0, 0],
+          opacity: 1
+        }
+      };
+    } else {
+      // Hyper-optimized, zero-crash default hardware translation for phones
+      swiperOptions.effect = "slide";
+      swiperOptions.speed = 350; // Snappy touch response
+    }
+
+    const swiper = new Swiper(".swiper", swiperOptions);
+
+    // ----- Category Targets Mapping Config -----
     const categoryTargets = {
+      all: 0,
       cocktails: 0,
       spirits: 17, 
       food: 31     
@@ -302,21 +249,26 @@
       }
     };
 
+    // Keep tabs highlighted based on active live page scrolling
     swiper.on("slideChange", () => {
       const idx = swiper.activeIndex;
       const buttons = document.querySelectorAll(".tab-btn");
       buttons.forEach(btn => btn.classList.remove("active-section"));
 
       if (idx >= categoryTargets.food) {
-        buttons[2].classList.add("active-section");
+        buttons[3].classList.add("active-section");
       } else if (idx >= categoryTargets.spirits) {
-        buttons[1].classList.add("active-section");
+        buttons[2].classList.add("active-section");
       } else {
+        buttons[1].classList.add("active-section");
+      }
+      
+      if (idx === 0) {
         buttons[0].classList.add("active-section");
       }
     });
 
-    // ----- Zoom & Edge Boundaries Pan Mechanism -----
+    // ----- Comprehensive Zoom + Edge Bounds Pan Handling -----
     const initZoomHandlers = () => {
       document.querySelectorAll(".swiper-slide img").forEach((img) => {
         let scale = 1, isZoomed = false;
