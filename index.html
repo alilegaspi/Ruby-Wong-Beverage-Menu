@@ -61,17 +61,21 @@
 
     /* ----- Cascading Marketing Ads Banner (Transparent) ----- */
     .promo-banner {
-      flex: 0 0 35px;
+      position: fixed; /* Pins it to the top of the viewport */
+      top: 25px;       /* Starts exactly below your 25px tabs */
+      left: 0;
       width: 100%;
+      height: 35px;
       background: transparent; 
       color: #ffffff;      
-      z-index: 99;
+      z-index: 1000;   /* High z-index ensures it sits above the zoomed image */
       overflow: hidden;
       display: flex;
       align-items: center;
       font-weight: bold;
       font-size: 12px;
       letter-spacing: 1px;
+      pointer-events: none; /* Allows touch/zoom gestures to pass through to the image underneath */
     }
     .promo-track {
       display: flex;
