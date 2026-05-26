@@ -92,7 +92,7 @@
     }
 
     /* ----- Mobile Swiper Layout ----- */
-    .swiper {
+   .swiper {
       flex: 1; 
       width: 100vw;
       background: #000;
@@ -100,6 +100,9 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
+      /* Add padding top to account for the 25px tabs + 35px banner = 60px total offset */
+      padding-top: 60px; 
+      box-sizing: border-box; /* Ensures padding doesn't break the layout */
     }
     .swiper-wrapper {
       transform-style: preserve-3d;
