@@ -65,9 +65,9 @@
       height: calc(100vh - 50px);
       margin-top: 50px;
       background: #000;
-      /* Fixes mobile blank/partial render by forcing hardware acceleration on the parent wrapper */
-      transform: translateZ(0);
-      will-change: transform;
+      /* Forces mobile browser to keep rendering engine active */
+      -webkit-transform: translate3d(0,0,0);
+      transform: translate3d(0,0,0);
     }
     .swiper-slide {
       display: flex;
@@ -177,7 +177,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // ----- Restored: Standard reliable image rendering paths -----
+    // ----- Render standard paths instantly without relying on lazy setups -----
     const wrapper = document.querySelector(".swiper-wrapper");
     for (let i = 1; i <= 31; i++) {
       const slide = document.createElement("div");
@@ -197,30 +197,42 @@
       wrapper.appendChild(slide);
     });
 
-    // ----- Highly Stable Page-Sliding Configuration -----
-    const swiper = new Swiper(".swiper", {
-      effect: "creative",
-      watchSlidesProgress: true, 
-      creativeEffect: {
-        limitProgress: 2, 
+    // ----- Responsive Configuration Strategy -----
+    // Detect viewport size dynamically
+    const isDesktop = window.innerWidth >= 1025;
+
+    const swiperOptions = {
+      grabCursor: true,
+      simulateTouch: true,
+      loop: false,
+      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+      pagination: { el: ".swiper-pagination", clickable: true }
+    };
+
+    if (isDesktop) {
+      // Premium book slide effect exclusively for PC monitors
+      swiperOptions.effect = "creative";
+      swiperOptions.speed = 450;
+      swiperOptions.creativeEffect = {
+        limitProgress: 2,
         prev: {
           shadow: true,
-          translate: ["-20%", 0, 0], 
+          translate: ["-20%", 0, 0],
           opacity: 0.6
         },
         next: {
           shadow: false,
-          translate: ["100%", 0, 0], 
+          translate: ["100%", 0, 0],
           opacity: 1
-        },
-      },
-      grabCursor: true,
-      simulateTouch: true, 
-      speed: 450, 
-      loop: false,
-      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-      pagination: { el: ".swiper-pagination", clickable: true },
-    });
+        }
+      };
+    } else {
+      // Hyper-optimized, zero-crash default hardware translation for phones
+      swiperOptions.effect = "slide";
+      swiperOptions.speed = 350; // Snappy touch response
+    }
+
+    const swiper = new Swiper(".swiper", swiperOptions);
 
     // ----- Category Targets Mapping Config -----
     const categoryTargets = {
