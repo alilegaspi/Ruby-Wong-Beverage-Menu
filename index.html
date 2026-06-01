@@ -240,23 +240,12 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const wrapper = document.querySelector(".swiper-wrapper");
-    for (let i = 1; i <= 31; i++) {
+    for (let i = 1; i <= 30; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
       slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />`;
       wrapper.appendChild(slide);
     }
-
-    const extraFiles = [
-      "menu/page32.jpg",
-      "menu/page33.jpg",
-    ];
-    extraFiles.forEach((path, idx) => {
-      const slide = document.createElement("div");
-      slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="${encodeURI(path)}" alt="Extra Page ${31 + idx + 1}" />`;
-      wrapper.appendChild(slide);
-    });
 
     const swiper = new Swiper(".swiper", {
       effect: "creative",
@@ -284,8 +273,8 @@
 
     const categoryTargets = {
       cocktails: 0,
-      spirits: 17, 
-      food: 31     
+      spirits: 15, 
+      food: 28     
     };
 
     window.jumpToCategory = (category) => {
