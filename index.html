@@ -356,36 +356,22 @@
         };
 
         const clampBoundaries = () => {
-          if (scale <= 1) {
-            moveX = moveY = 0;
-            return;
-          }
-          const rect = img.getBoundingClientRect();
           const swiperContainer = document.querySelector('.swiper');
           const topOverlayHeight = 60;
-          const viewW = swiperContainer.clientWidth;
-          const viewH = swiperContainer.clientHeight + topOverlayHeight;
+          const viewW = Math.max(1, swiperContainer ? swiperContainer.clientWidth : window.innerWidth);
+          const viewH = Math.max(1, (swiperContainer ? swiperContainer.clientHeight : window.innerHeight) + topOverlayHeight);
+          const baseW = img.naturalWidth || img.clientWidth;
+          const baseH = img.naturalHeight || img.clientHeight;
+          const zoomW = Math.max(baseW * scale, viewW);
+          const zoomH = Math.max(baseH * scale, viewH);
+          const maxMoveX = Math.max(0, (zoomW - viewW) / 2);
+          const maxMoveY = Math.max(0, (zoomH - viewH) / 2);
 
-          if (rect.width > viewW) {
-            const maxGetX = (rect.width - viewW) / 2;
-            const currentOriginOffset = (viewW / 2 - originX) * (scale - 1);
-            const relativeX = moveX + currentOriginOffset;
-            if (Math.abs(relativeX) > maxGetX) {
-              moveX = (relativeX > 0 ? maxGetX : -maxGetX) - currentOriginOffset;
-            }
-          } else {
-            moveX = 0;
-          }
+          moveX = Math.max(-maxMoveX, Math.min(maxMoveX, moveX));
+          moveY = Math.max(-maxMoveY, Math.min(maxMoveY, moveY));
 
-          if (rect.height > viewH) {
-            const maxGetY = (rect.height - viewH) / 2;
-            const currentOriginOffset = (viewH / 2 - originY) * (scale - 1);
-            const relativeY = moveY + currentOriginOffset;
-            if (Math.abs(relativeY) > maxGetY) {
-              moveY = (relativeY > 0 ? maxGetY : -maxGetY) - currentOriginOffset;
-            }
-          } else {
-            moveY = 0;
+          if (scale <= 1) {
+            moveX = moveY = 0;
           }
         };
 
