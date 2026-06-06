@@ -215,6 +215,7 @@
     <button class="tab-btn active-section" onclick="jumpToCategory('cocktails')">COCKTAILS</button>
     <button class="tab-btn" onclick="jumpToCategory('spirits')">SPIRITS</button>
     <button class="tab-btn" onclick="jumpToCategory('food')">FOOD</button>
+    <button class="tab-btn" onclick="jumpToCategory('wines')">WINES</button>
   </div>
 
   <div class="promo-banner">
@@ -240,7 +241,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const wrapper = document.querySelector(".swiper-wrapper");
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 41; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
       slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />`;
@@ -273,8 +274,9 @@
 
     const categoryTargets = {
       cocktails: 0,
-      spirits: 15, 
-      food: 28     
+      spirits: 14,
+      food: 28,
+      wines: 30
     };
 
     window.jumpToCategory = (category) => {
@@ -289,7 +291,9 @@
       const buttons = document.querySelectorAll(".tab-btn");
       buttons.forEach(btn => btn.classList.remove("active-section"));
 
-      if (idx >= categoryTargets.food) {
+      if (idx >= categoryTargets.wines) {
+        buttons[3].classList.add("active-section");
+      } else if (idx >= categoryTargets.food) {
         buttons[2].classList.add("active-section");
       } else if (idx >= categoryTargets.spirits) {
         buttons[1].classList.add("active-section");
