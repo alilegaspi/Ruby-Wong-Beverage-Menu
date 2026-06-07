@@ -182,7 +182,7 @@
     /* =========================================================================
        🖥️ PC / DESKTOP ONLY MEDIA QUERY (Unified containment layout)
        ========================================================================= */
-    @media screen and (min-width: 1025px) {
+    @media screen and (min-width: 768px) {
       body {
         background: #0d0d0d;
         display: grid;
@@ -190,40 +190,50 @@
         height: 100vh;
         width: 100vw;
       }
-      
+
       .menu-tabs, .promo-banner, .swiper {
         position: relative;
-        width: 500px;
-        max-width: 500px;
+        width: min(100vw, 520px);
+        max-width: 520px;
         left: unset;
         top: unset;
         transform: unset;
         flex: unset;
       }
-      
+
       .menu-tabs {
         border-radius: 12px 12px 0 0;
         margin-top: 20px;
-        height: 25px; /* Matches mobile reduction */
+        height: 32px;
       }
-      
+
       .promo-banner {
-        height: 35px;
+        height: 36px;
       }
 
       .swiper {
-        height: calc(100vh - 120px); /* Recalculated dynamic footprint drop to match shorter tabs */
-        margin-top: -60px;
-        padding-top: 60px;
+        height: calc(100vh - 96px);
+        margin-top: 0;
+        padding-top: 0;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
-        overflow: visible;
+        overflow: hidden;
+      }
+
+      .swiper-wrapper {
+        align-items: center;
+      }
+
+      .swiper-slide {
+        align-items: center;
       }
 
       .swiper-slide img {
         width: auto;
         height: 100%;
         max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
       }
 
       .swiper-button-prev {
@@ -277,14 +287,16 @@
       wrapper.appendChild(slide);
     }
 
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+
     const swiper = new Swiper(".swiper", {
-      effect: "creative",
+      effect: isDesktop ? "slide" : "creative",
       grabCursor: true,
       simulateTouch: true,
       loop: false,
-      speed: 450, 
+      speed: 450,
       watchSlidesProgress: true,
-      creativeEffect: {
+      creativeEffect: isDesktop ? undefined : {
         limitProgress: 2,
         prev: {
           shadow: false,
@@ -303,7 +315,7 @@
 
     const categoryTargets = {
       cocktails: 0,
-      spirits: 14,
+      spirits: 15,
       food: 28,
       wines: 30
     };
@@ -345,6 +357,15 @@
         let doubleTap = 0;
         let transformId = null;
 
+        const resetTransform = () => {
+          scale = 1;
+          isZoomed = false;
+          moveX = moveY = lastX = lastY = 0;
+          originX = originY = 0;
+          img.style.transformOrigin = 'center center';
+          img.style.transform = 'translate3d(0, 0, 0) scale(1)';
+        };
+
         const updateTransform = () => {
           img.style.transformOrigin = `${originX}px ${originY}px`;
           img.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale})`;
@@ -356,23 +377,23 @@
         };
 
         const clampBoundaries = () => {
-          const swiperContainer = document.querySelector('.swiper');
-          const topOverlayHeight = 60;
-          const viewW = Math.max(1, swiperContainer ? swiperContainer.clientWidth : window.innerWidth);
-          const viewH = Math.max(1, (swiperContainer ? swiperContainer.clientHeight : window.innerHeight) + topOverlayHeight);
+          if (scale <= 1) {
+            moveX = moveY = 0;
+            return;
+          }
+
+          const viewRect = document.querySelector('.swiper').getBoundingClientRect();
           const baseW = img.naturalWidth || img.clientWidth;
           const baseH = img.naturalHeight || img.clientHeight;
-          const zoomW = Math.max(baseW * scale, viewW);
-          const zoomH = Math.max(baseH * scale, viewH);
-          const maxMoveX = Math.max(0, (zoomW - viewW) / 2);
-          const maxMoveY = Math.max(0, (zoomH - viewH) / 2);
+          const zoomW = Math.max(baseW * scale, viewRect.width);
+          const zoomH = Math.max(baseH * scale, viewRect.height);
+          const maxMoveX = Math.max(0, (zoomW - viewRect.width) / 2);
+          const maxMoveY = Math.max(0, (zoomH - viewRect.height) / 2);
 
           moveX = Math.max(-maxMoveX, Math.min(maxMoveX, moveX));
           moveY = Math.max(-maxMoveY, Math.min(maxMoveY, moveY));
-
-          if (scale <= 1) {
-            moveX = moveY = 0;
-          }
+          lastX = moveX;
+          lastY = moveY;
         };
 
         const setOrigin = (touch) => {
@@ -397,8 +418,12 @@
             isZoomed = !isZoomed;
             scale = isZoomed ? 3.2 : 1;
             moveX = moveY = lastX = lastY = 0;
-            
-            if (isZoomed) clampBoundaries();
+
+            if (!isZoomed) {
+              resetTransform();
+            } else {
+              clampBoundaries();
+            }
             setSwiperLock();
             updateTransform();
 
@@ -455,10 +480,7 @@
           startScale = scale;
           if (scale <= 1.05) {
             img.classList.add("is-animating");
-            scale = 1;
-            isZoomed = false;
-            moveX = moveY = lastX = lastY = 0;
-            img.style.transformOrigin = "center center";
+            resetTransform();
             setSwiperLock();
             updateTransform();
             setTimeout(() => img.classList.remove("is-animating"), 200);
@@ -466,20 +488,30 @@
         });
 
         swiper.on("slideChange", () => {
-          scale = 1;
-          moveX = moveY = lastX = lastY = 0;
-          isZoomed = false;
-          img.style.transformOrigin = "center center";
+          resetTransform();
           setSwiperLock();
-          updateTransform();
         });
       });
     };
 
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => setTimeout(initZoomHandlers, 150));
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          document.querySelectorAll('.swiper-slide img').forEach((img) => {
+            img.style.transform = 'translate3d(0, 0, 0) scale(1)';
+            img.style.transformOrigin = 'center center';
+          });
+          initZoomHandlers();
+        }, 150);
+      });
     } else {
-      setTimeout(initZoomHandlers, 150);
+      setTimeout(() => {
+        document.querySelectorAll('.swiper-slide img').forEach((img) => {
+          img.style.transform = 'translate3d(0, 0, 0) scale(1)';
+          img.style.transformOrigin = 'center center';
+        });
+        initZoomHandlers();
+      }, 150);
     }
   </script>
 </body>
