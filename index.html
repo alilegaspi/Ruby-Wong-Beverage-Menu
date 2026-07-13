@@ -140,24 +140,6 @@
     .swiper-slide img.is-animating {
       transition: transform 0.2s ease-out !important;
     }
-    .unavailable-stamp {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      z-index: 5;
-      background: rgba(220, 38, 38, 0.92);
-      color: #fff;
-      border: 2px solid rgba(255, 255, 255, 0.9);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-      transform: rotate(10deg);
-      pointer-events: none;
-    }
     .swiper-button-next,
     .swiper-button-prev {
       color: #fff;
@@ -282,8 +264,7 @@
     for (let i = 1; i <= 41; i++) {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      const unavailable = i === 13 ? '<div class="unavailable-stamp">Currently Not Available</div>' : '';
-      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />${unavailable}`;
+      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />`;
       wrapper.appendChild(slide);
     }
 
