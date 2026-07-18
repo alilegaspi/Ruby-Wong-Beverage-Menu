@@ -261,12 +261,18 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const wrapper = document.querySelector(".swiper-wrapper");
-    for (let i = 1; i <= 40; i++) {
+    const pageFiles = [
+      ...Array.from({ length: 28 }, (_, i) => `page${i + 1}.jpg`),
+      "page28.5.jpeg",
+      ...Array.from({ length: 12 }, (_, i) => `page${29 + i}.jpg`)
+    ];
+
+    pageFiles.forEach((fileName) => {
       const slide = document.createElement("div");
       slide.className = "swiper-slide";
-      slide.innerHTML = `<img src="menu/page${i}.jpg" alt="Page ${i}" />`;
+      slide.innerHTML = `<img src="menu/${fileName}" alt="${fileName}" />`;
       wrapper.appendChild(slide);
-    }
+    });
 
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
@@ -298,7 +304,7 @@
       cocktails: 0,
       spirits: 15,
       food: 28,
-      wines: 30
+      wines: 31
     };
 
     window.jumpToCategory = (category) => {
