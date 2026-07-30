@@ -240,13 +240,21 @@
 
   <div class="promo-banner">
     <div class="promo-track">
-      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
-      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
-      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">🎉 NO RING THURSDAYS: Free ladies drinks on selected cocktails & house wines from 8:30 PM - 9:30 PM and 11:00 PM - late! 💖</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: P1,250.00 net per person for unlimited selected beverages from 7:00 PM to 9:00 PM daily! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday night from 8:30 PM till late! 🎶</span>
+      <span class="promo-text">🎧 WEDNESDAY VIBES: Live DJ from 8:30 PM till late! 🔊</span>
+      <span class="promo-text">🔮 THURSDAY MYSTIC NIGHTS: Live DJ + In-House Tarot Card Reader from 8:30 PM till late! ✨</span>
+      <span class="promo-text">🎺 SATURDAY SOIRÉE: Live DJ & Sax Duo from 8:30 PM till late! 🎷</span>
+      <span class="promo-text">👔 GUYS ONLY: No Ring individuals enjoy 15% off food & beverages! 🍽️</span>
       <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
-      <span class="promo-text">💃 THURSDAY LADIES NIGHT: Buy 1 Get 1 FREE on all Signature Cocktails ALL NIGHT LONG! 🍹</span>
-      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: Buy 1 Get 1 FREE on Signature Cocktails from 7:00 PM to 9:00 PM! 🍸</span>
-      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday & Saturday from 8:30 PM - 11:30 PM! 🎶</span>
+      <span class="promo-text">🎉 NO RING THURSDAYS: Free ladies drinks on selected cocktails & house wines from 8:30 PM - 9:30 PM and 11:00 PM - late! 💖</span>
+      <span class="promo-text">✨ HAPPY HOUR EVERYDAY: P1,250.00 net per person for unlimited selected beverages from 7:00 PM to 9:00 PM daily! 🍸</span>
+      <span class="promo-text">🎷 LIVE JAZZ BAND: Every Friday night from 8:30 PM till late! 🎶</span>
+      <span class="promo-text">🎧 WEDNESDAY VIBES: Live DJ from 8:30 PM till late! 🔊</span>
+      <span class="promo-text">🔮 THURSDAY MYSTIC NIGHTS: Live DJ + In-House Tarot Card Reader from 8:30 PM till late! ✨</span>
+      <span class="promo-text">🎺 SATURDAY SOIRÉE: Live DJ & Sax Duo from 8:30 PM till late! 🎷</span>
+      <span class="promo-text">👔 GUYS ONLY: No Ring individuals enjoy 15% off food & beverages! 🍽️</span>
       <span class="promo-text">💋 BURLESQUE NIGHT: Once a month! Ask our staff for this month's exclusive schedule. ✨</span>
     </div>
   </div>
@@ -262,7 +270,9 @@
   <script>
     const wrapper = document.querySelector(".swiper-wrapper");
     const pageFiles = [
-      ...Array.from({ length: 28 }, (_, i) => `page${i + 1}.jpg`),
+      ...Array.from({ length: 15 }, (_, i) => `page${i + 1}.jpg`),
+      "page15.5.jpeg",
+      ...Array.from({ length: 13 }, (_, i) => `page${16 + i}.jpg`),
       "page28.5.jpg",
       ...Array.from({ length: 12 }, (_, i) => `page${29 + i}.jpg`)
     ];
@@ -302,9 +312,9 @@
 
     const categoryTargets = {
       cocktails: 0,
-      spirits: 15,
-      food: 28,
-      wines: 31
+      spirits: 16,
+      food: 29,
+      wines: 32
     };
 
     window.jumpToCategory = (category) => {
